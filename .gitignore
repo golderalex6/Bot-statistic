@@ -1,0 +1,8 @@
+**/[Tt]est*
+**/data
+*.keras
+**/models
+**/__pycache__
+*.json
+*.env
+*.db
