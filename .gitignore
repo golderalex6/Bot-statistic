@@ -1,8 +1,12 @@
 **/[Tt]est*
 **/data
+**/metadata
 *.keras
 **/models
 **/__pycache__
+*.csv
 *.json
 *.env
 *.db
+*.weights.h5
+

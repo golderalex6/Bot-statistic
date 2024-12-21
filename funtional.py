@@ -15,3 +15,9 @@ plt.rc('axes',labelweight='bold',labelsize='large',titleweight='bold',titlesize=
 
 class functional():
     pass
+
+class Future:
+    pass
+
+class Spot:
+    pass
