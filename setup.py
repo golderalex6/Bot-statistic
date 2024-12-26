@@ -13,22 +13,28 @@ if not os.path.exists(os.path.join(Path(__file__).parent,'metadata')):
 #create .json files for 'metadata' folder
 metadatas={
         'spot_grid':{
-            'symbol':'BTCUSDT'
+            'symbol':'BTCUSDT',
+            'initial_balance':10000
             },
         'future_grid':{
-            'symbol':'BTCUSDT'
+            'symbol':'BTCUSDT',
+            'initial_balance':10000
             },
         'infinity_bot':{
-            'symbol':'BTCUSDT'
+            'symbol':'BTCUSDT',
+            'initial_balance':10000
             },
         'rebalancing_bot':{
-            'symbol':'BTCUSDT'
+            'symbol':'BTCUSDT',
+            'initial_balance':10000
             },
         'special_martingale':{
-            'symbol':'BTCUSDT'
+            'symbol':'BTCUSDT',
+            'initial_balance':10000
             },
         'dca_spot':{
-            'symbol':'BTCUSDT'
+            'symbol':'BTCUSDT',
+            'initial_balance':10000
             },
     }
 
