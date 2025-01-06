@@ -12,40 +12,47 @@ class Order:
         self._leverage = leverage
         self._position = position
 
+        self._current_price = np.nan
         self._margin = amount/leverage
-        self._liquidity_price = None
+        self._liquidity_price = np.nan
         self._open_price = np.nan
         self._close_price = np.nan
 
         self._pnl = None
         self._roi = None
 
-        self._status = 0 #{0 : "Placing",1 : "Opening",2 : "Closed" }
+        self._status = 0 #{ 0 : "Placing",1 : "Opening",2 : "Closed" }
 
-    def place(self,price) -> None:
+    def open(self,price) -> None:
+
         self._liquidity_price = price*(1-self._position/self._leverage)
         self._status = 1
         self._open_price = price
         self._pnl = 0
         self._roi = 0
 
-    def close(self,price) -> None:
+    def close(self) -> None:
 
         self._status = 2
-        self._close_price = price
-        self._pnl = self._position*(price-self._open_price)
-        self._roi = self._position*(price-self._open_price)/self._open_price
+        self._close_price = self._current_price
+        self._pnl = self._position*(self._current_price-self._open_price)
+        self._roi = self._position*(self._current_price-self._open_price)/self._open_price
 
     @abstractmethod
     def _open_condition(self) -> bool:
         pass
 
-    def update(self) -> None:
-        pass
-
-    @abstractmethod
     def update(self,price) -> None:
-        pass
+
+        self._current_price = price
+
+        if self._open_condition():
+            self.open(price)
+
+        if self._status == 1:
+
+            self._pnl = self._position*(price-self._open_price)
+            self._roi = self._position*(price-self._open_price)/self._open_price
 
     def get_metadata(self):
         return {
@@ -66,31 +73,18 @@ class Limit(Order):
         super().__init__(amount,leverage,position)
         self._limit_price = price
 
-    def update(self,price:float):
-        if self._position*price <= self._position*self._limit_price and self._status == 0:
-            self.place(price)
-            self._status = 1
-
-        if self._status == 1:
-
-            self._pnl = self._position*(price-self._open_price)
-            self._roi = self._position*(price-self._open_price)/self._open_price
-
+    def _open_condition(self) -> bool:
+        if self._position*self._current_price <= self._position*self._limit_price and self._status == 0:
+            return True
+        return False
 
 
 class Market(Order):
     def __init__(self,amount:float,leverage:int,position:int) -> None:
         super().__init__(amount,leverage,position)
 
-    def update(self,price:float):
-        if self._status == 0:
-            self.place(price)
-            self._status = 1
-
-        if self._status == 1:
-
-            self._pnl = self._position*(price-self._open_price)
-            self._roi = self._position*(price-self._open_price)/self._open_price
+    def _open_condition(self) -> bool:
+        return True
 
 class TraillingStop(Order):
     def __init__(self):
@@ -127,7 +121,13 @@ class Spot:
 
 if __name__ == '__main__':
     prices = [10,8,7,5,4,6,8,11]
-    order = Limit(100,1,4.5,-1)
+    order = Limit(100,1,4.5,1)
     for price in prices:
         order.update(price)
         print(price,order.get_metadata())
+
+    order.close()
+    print('Closed!!')
+    print(order.get_metadata())
+    order.update(1000)
+    print(order.get_metadata())
